@@ -9,6 +9,7 @@ import torchvision.transforms as transforms
 from utils import datautils
 import models
 from utils import utils
+from utils import dataloaders
 import numpy as np
 import PIL
 from tqdm import tqdm
@@ -27,6 +28,7 @@ class BaseSSL(nn.Module):
     """
     DATA_ROOT = os.environ.get('DATA_ROOT', os.path.dirname(os.path.abspath(__file__)) + '/data')
     IMAGENET_PATH = os.environ.get('IMAGENET_PATH', '/home/aashukha/imagenet/raw-data/')
+    AwA2_PATH = os.environ.get('AwA2_PATH', '/nvme/h/gr23pk1/data_p102/koromilas/Data/Animals_with_Attributes2/')
 
     def __init__(self, hparams):
         super().__init__()
@@ -79,6 +81,10 @@ class BaseSSL(nn.Module):
             valdir = os.path.join(self.IMAGENET_PATH, 'val')
             self.trainset = datasets.ImageFolder(traindir, transform=train_transform)
             self.testset = datasets.ImageFolder(valdir, transform=test_transform)
+        elif self.hparams.data == 'awa2':
+            self.trainset = dataloaders.AnimalDataset(self.AwA2_PATH, 'allclasses.txt', True, True)
+            self.testset = dataloaders.AnimalDataset(self.AwA2_PATH, 'allclasses.txt', True, False)
+        
         else:
             raise NotImplementedError
 
