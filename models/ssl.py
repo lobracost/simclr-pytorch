@@ -347,7 +347,7 @@ class SSLEval(BaseSSL):
         if hparams.data == 'cifar':
             hdim = self.encode(torch.ones(10, 3, 32, 32).to(device)).shape[1]
             n_classes = 10
-        elif hparams.data == 'imagenet':
+        elif hparams.data == 'imagenet' or hparams.data == 'awa2':
             hdim = self.encode(torch.ones(10, 3, 224, 224).to(device)).shape[1]
             n_classes = 1000
 
@@ -366,7 +366,7 @@ class SSLEval(BaseSSL):
         return self.encoder.model(x, out='h')
 
     def step(self, batch):
-        if self.hparams.problem == 'eval' and self.hparams.data == 'imagenet':
+        if self.hparams.problem == 'eval' and (self.hparams.data == 'imagenet' or self.hparams.data == 'awa2'):
             batch[0] = batch[0] / 255.
         h, y = batch
         if self.hparams.precompute_emb_bs == -1:
@@ -412,7 +412,7 @@ class SSLEval(BaseSSL):
                 shuffle=False,
             )
             for x, y in tqdm(loader):
-                if self.hparams.data == 'imagenet':
+                if self.hparams.data == 'imagenet' or self.hparams.data == 'awa2':
                     x = x.to(torch.device('cuda'))
                     x = x / 255.
                 e = self.encode(x)
@@ -488,7 +488,7 @@ class SSLEval(BaseSSL):
             test_transform = transforms.Compose([
                 transforms.ToTensor(),
             ])
-        elif self.hparams.data == 'imagenet':
+        elif self.hparams.data == 'imagenet' or self.hparams.data == 'awa2':
             train_transform = transforms.Compose([
                 transforms.RandomResizedCrop(
                     224,
