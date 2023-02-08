@@ -7,10 +7,10 @@ config_file: null
 data: awa2
 dist: ddp
 dist_address: '127.0.0.1:1234'
-eval_freq: 2900
-iters: 29000
+eval_freq: 580
+iters: 5800
 log_freq: 29
-lr: 4.0
+lr: 2.4
 lr_schedule: warmup-anneal
 multiplier: 2
 name: 'awa2'
@@ -18,7 +18,7 @@ node_rank: 0
 opt: lars
 problem: sim-clr
 root: 'none'
-save_freq: 2900
+save_freq: 5800
 scale_lower: 0.08
 seed: -1
 sync_bn: true
@@ -27,5 +27,5 @@ tmp: false
 verbose: true
 warmup: 0.01
 weight_decay: 1.0e-06
-workers: 2
+workers: 8
 world_size: 1
