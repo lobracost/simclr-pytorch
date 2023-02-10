@@ -254,24 +254,7 @@ class SimCLR(BaseSSL):
                 datautils.Clip(),
             ])
             test_transform = train_transform
-
-        elif self.hparams.data == 'imagenet':
-            from utils.datautils import GaussianBlur
-
-            im_size = 224
-            train_transform = transforms.Compose([
-                transforms.RandomResizedCrop(
-                    im_size,
-                    scale=(self.hparams.scale_lower, 1.0),
-                    interpolation=PIL.Image.BICUBIC,
-                ),
-                transforms.RandomHorizontalFlip(0.5),
-                datautils.get_color_distortion(s=self.hparams.color_dist_s),
-                transforms.ToTensor(),
-                GaussianBlur(im_size // 10, 0.5),
-                datautils.Clip(),
-            ])
-            test_transform = train_transform
+            
         elif self.hparams.data == 'imagenet' or self.hparams.data == 'awa2':
             from utils.datautils import GaussianBlur
 
@@ -289,7 +272,8 @@ class SimCLR(BaseSSL):
                 datautils.Clip(),
             ])
             test_transform = train_transform
-        
+        else:
+            raise NotImplementedError
         return train_transform, test_transform
 
     def get_ckpt(self):
@@ -327,7 +311,7 @@ class SSLEval(BaseSSL):
         if hparams.encoder_ckpt != '':
             ckpt = torch.load(hparams.encoder_ckpt, map_location=device)
             if getattr(ckpt['hparams'], 'dist', 'dp') == 'ddp':
-                ckpt['hparams'].dist = 'dp'
+                ckpt['hparams'].dist = 'dp' 
             if self.hparams.dist == 'ddp':
                 ckpt['hparams'].dist = 'gpu:%d' % hparams.gpu
 
@@ -504,6 +488,8 @@ class SSLEval(BaseSSL):
                 transforms.ToTensor(),
                 lambda x: (255 * x).byte(),
             ])
+        else:
+            raise NotImplementedError
         return train_transform if self.hparams.aug else test_transform, test_transform
 
     def train(self, mode=True):
